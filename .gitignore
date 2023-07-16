@@ -1,6 +1,7 @@
-.env
+prod.env
 .venv
 .vscode
 __pycache__/
 .ipynb_checkpoints/
 data/
+hf_download/
