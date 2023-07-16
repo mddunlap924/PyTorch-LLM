@@ -40,21 +40,38 @@
   **NOTE**: this workflow is not necessarily unique to LLMs and can be applied to almost all deep learning applications (computer vision, generative models, multi-layer perceptrons, audio, etc.). 
 
 # Generic Workflow
+THe Pseudo Code provided below guides this repository and outlines a cross-validation training process using PyTorch.
 
-  A few of the key components presented in this repository are:
-  - A high-level PyTorch code structure
-  - Dataloaders
-  - Learning Rate Schedulers
-  - Learning Rate Finder
-  - Custom PyTorch Models to fine-tune an LLM from HuggingFace
+```
+INPUT: YAML config. file
+OUTPUT: Model checkpoints, training log
+
+1. Load YAML config.
+2. C.V. Data Folds
+3. Loop Over each data fold:
+  a. Training module
+    * Dataloader with preprocessing
+    * Custom PyTorch Model
+    * Optimizer, autograd, save checkpoints, log training metrics
+  b. Validation module (Inference)
+    * Dataloader with preprocessing
+    * Load model weights from Step 3.a
+    * Inference on validation data
+    * Log validation metrics  
+```
+
+  Some of the machine learning techniques incorporated are:
+  - PyTorch specific:
+    - [Code structure](https://pytorch.org/tutorials/beginner/basics/intro.html) which is based on PyTorch's tutorial
+    - [Datasets and Dataloaders](https://pytorch.org/tutorials/beginner/basics/data_tutorial.html)
+    - [Learning Rate Schedulers](https://pytorch.org/docs/stable/optim.html#how-to-adjust-learning-rate)
+    - [Learning Rate Finder](https://github.com/davidtvs/pytorch-lr-finder)
+  - [HuggingFace Transformers](https://huggingface.co/docs/transformers/index) 
   - Training and Inference Modules
   - Tracking Multiple Performance Metrics
   - Visualizing Training Curves to Evaluate Model Fit
   - Cross-Validation Training
   - Experiment Tracking with Tensorboards
-
-  The workflow can be modified by end users to better suite their needs and it provides a starting point for getting started with the oworkflow and best practices for working with LLMs. A generic workflow or template is presented which  library developed for editing of digitized VHS cassettes. This repository contains the <strong>PyVHS</strong> source code.
-  
 
 # Use Case
 The Natural Language Processing (NLP) dataset that will server as the use case for this repository is publicly available from [The Consumer Financial Protection Bureau (CFPB)](https://www.consumerfinance.gov/). This dataset is an excellent starting point for working with unstructured text data and for training supervised learning classification tasks. Complaints from consumers that feel they were mistreated by a credit bureau, bank, or financial service provider are given in this dataset.
