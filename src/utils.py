@@ -5,8 +5,9 @@ import os
 import sys
 from pathlib import Path
 from types import SimpleNamespace
-import yaml
+import uuid
 import random
+import yaml
 import numpy as np
 import torch
 
@@ -80,6 +81,38 @@ def seed_everything(*, seed: int=42):
     if torch.cuda.is_available(): 
         torch.cuda.manual_seed_all(seed)
         torch.backends.cudnn.deterministic = True
+
+class RunIDs():
+    def __init__(self,
+                 test_folds: list,
+                 num_folds: int):
+        self.test_folds = test_folds
+        self.num_folds = num_folds
+        self.group_id = str
+        self.folds_id = RecursiveNamespace
+
+        # Are all folds being tested
+        if test_folds == list(range(num_folds)):
+            self.test_all_folds = True
+        else:
+            self.test_all_folds = False
+
+
+    def generate_id(self):
+        # Generate a random ID
+        return str(uuid.uuid4()).split('-')[0]
+
+
+    def generate_run_ids(self):
+        # Get a group id (i.e. ID that will organize all folds)
+        self.group_id = self.generate_id()
+
+        fold_info = {}
+        for fold in self.test_folds:
+            fold_info[f'fold{fold}'] = {'run_id': self.generate_id()}
+        self.folds_id = RecursiveNamespace(**fold_info)
+        return
+
 
 
 # class WandB:

@@ -1,22 +1,55 @@
 # YAML file listing config. parameters
 seed: 42
 lr: 0.5
+
+# Paths
+paths:
+  data:
+    base_dir: ../data
+    raw_data: cfpb.csv
+    debug_data: cfpb_debug.csv
+
+# DEBUG [True or False]; if False it will load the debug_data
+# Use for pipeline development
+debug: False
+
+# DATA
+data_info:
+  source_fields:
+    - Consumer complaint narrative
+    - State
+    - Company response to consumer
+  target: Product
+
+# Stratification Technique
+stratify:
+  shuffle: True
+  technique: stratified_kfold
+
+# Cross-Validation Folds
+cv:
+  num_folds: 5
+  val_folds: [1, 2, 3, 4, 5] #[list of integers] (start counting at 1)
+
+# Preprocessing
 preprocessing:
   data:
     - clean
     - normalize
     - split
-stratify:
-  technique: k-fold
-  num_folds: 5
-  test_folds: all #[all or list of integers]
+
+
+
+# Data
+
 wandb:
   project: nlp-testing
   entity: mdunlap
   log_results: True
   interval_type: steps #[epochs, steps]
   interval_delta: 1 #[int describing numer of intervals]
-data_base_path: './data'
+
+
 
 model:
   dir: ./utils/models

@@ -1,6 +1,6 @@
 import torch
 import time
-from src.metrics import AverageMeter
+from src.training.metrics import AverageMeter
 
 
 

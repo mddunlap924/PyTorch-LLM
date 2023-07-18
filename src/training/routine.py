@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from src.dataloading.load_data import LoadData
 from src.dataloading.load_datasets import TrainDataset, TestDataset, collate, collate_fn
-from src.dataloading import splitters
+from src.dataloading import stratify_data
 # from src import nlp
 from src.training import assess_epoch
 
@@ -20,7 +20,7 @@ def workflow(cfg):
     test = csv_load_data.load(file_type='test')
 
     # Split Dataset
-    train = splitters.multilabelstrat(df=train,
+    train = stratify_data.multilabelstrat(df=train,
                                       n_splits=CFG.num_folds,
                                       target_cols=TARGET_COLS,
                                       seed=CFG.seed)
