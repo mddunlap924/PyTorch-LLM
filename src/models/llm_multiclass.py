@@ -3,16 +3,6 @@ from torch import nn
 from transformers import AutoModel, AutoConfig
 
 
-class SillyTest():
-    def __init__(self, num0, num1):
-        self.num0 = num0
-        self.num1 = num1
-
-    def crazy_add(self):
-        return self.num0 + self.num1
-
-
-
 class MeanPooling(nn.Module):
     def __init__(self):
         super(MeanPooling, self).__init__()

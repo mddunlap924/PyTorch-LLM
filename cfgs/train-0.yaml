@@ -6,7 +6,7 @@ lr: 0.5
 paths:
   data:
     base_dir: ../data
-    raw_data: cfpb.csv
+    data: cfpb.csv
     debug_data: cfpb_debug.csv
 
 # DEBUG [True or False]; if False it will load the debug_data
@@ -23,7 +23,6 @@ data_info:
 
 # Stratification Technique
 stratify:
-  shuffle: True
   technique: stratified_kfold
 
 # Cross-Validation Folds
@@ -33,10 +32,16 @@ cv:
 
 # Preprocessing
 preprocessing:
-  data:
-    - clean
-    - normalize
-    - split
+  apply_techniques:
+    - LabelEncoder
+    - OneHotEncoder
+  LabelEncoder:
+    fields:
+      - State
+  OneHotEncoder:
+    fields:
+      - Product
+
 
 
 
@@ -50,10 +55,17 @@ wandb:
   interval_delta: 1 #[int describing numer of intervals]
 
 
+# Model and Tokenizer
+model_tokenizer:
+  base_dir: ../hf_download
+  name: bert-base-uncased
 
 model:
   dir: ./utils/models
   module: bert
   func: SillyTest
+tokenizer:
+  abbreviations:
+    - Null
 
 

@@ -10,7 +10,7 @@ class StratifyData():
                  n_folds: int,
                  target: str,
                  *,
-                 shuffle: bool=True,
+                 shuffle: bool=False,
                  seed: int=42):
         # Set parameters
         self.technique = technique
@@ -21,9 +21,12 @@ class StratifyData():
 
 
     def __stratified_kfold(self, df: pd.DataFrame) -> pd.DataFrame:
-        skf = StratifiedKFold(n_splits=self.n_folds,
-                              shuffle=self.shuffle,
-                              random_state=self.seed)
+        if self.shuffle:
+            skf = StratifiedKFold(n_splits=self.n_folds,
+                                shuffle=self.shuffle,
+                                random_state=self.seed)
+        else:
+            skf = StratifiedKFold(n_splits=self.n_folds)
         for n, (_, val_idx) in enumerate(skf.split(df, df[self.target])):
             df.loc[val_idx, 'fold'] = int(n + 1)
         df['fold'] = df['fold'].astype(int)
@@ -34,5 +37,6 @@ class StratifyData():
         """
         Stratify the dataframe
         """
+        # Select the stratification technique
         stratify_tech = getattr(self, f'_{self.__class__.__name__}__{self.technique}')
         return stratify_tech(df=df)
