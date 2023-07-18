@@ -6,7 +6,6 @@ import sys
 from pathlib import Path
 from types import SimpleNamespace
 import yaml
-import wandb
 import random
 import numpy as np
 import torch
@@ -39,14 +38,15 @@ class RecursiveNamespace(SimpleNamespace):
                 setattr(self, key, list(map(self.map_entry, val)))
 
 
-def load_cfg(base_dir: Path, filename: str) -> SimpleNamespace:
+def load_cfg(base_dir: Path,
+             filename: str,
+             *,
+             as_namespace: bool=True) -> SimpleNamespace:
     """
     Load YAML configuration files saved uding the "cfgs" directory
-
     Args:
         base_dir (Path): Directory to YAML config. file
         filename (str): Name of YAML configuration file to load
-
     Returns:
         SimpleNamespace: A simple class for calling configuration parameters
     """
@@ -54,7 +54,11 @@ def load_cfg(base_dir: Path, filename: str) -> SimpleNamespace:
     with open(cfg_path, 'r') as file:
         cfg_dict = yaml.safe_load(file)
     file.close()
-    return RecursiveNamespace(**cfg_dict)
+    if as_namespace:
+        cfg = RecursiveNamespace(**cfg_dict)
+    else:
+        cfg = cfg_dict
+    return cfg
 
 
 def debugger_is_active() -> bool:
@@ -62,13 +66,20 @@ def debugger_is_active() -> bool:
     return hasattr(sys, 'gettrace') and sys.gettrace() is not None
 
 
-def seed_everything(seed=42):
-    random.seed(seed)
+def seed_everything(*, seed: int=42):
+    """
+    Seed everything
+
+    Args:
+        seed (_type_): Seed
+    """
     os.environ['PYTHONHASHSEED'] = str(seed)
+    random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
-    torch.cuda.manual_seed(seed)
-    torch.backends.cudnn.deterministic = True
+    if torch.cuda.is_available(): 
+        torch.cuda.manual_seed_all(seed)
+        torch.backends.cudnn.deterministic = True
 
 
 # class WandB:

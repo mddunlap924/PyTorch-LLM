@@ -1,6 +1,6 @@
 import torch
 import time
-from metrics import AverageMeter
+from src.metrics import AverageMeter
 
 
 
