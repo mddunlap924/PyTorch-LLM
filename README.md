@@ -2,7 +2,7 @@
   <!-- <a href="https://github.com/mddunlap924/VHSpy">
     <img src="https://raw.githubusercontent.com/mddunlap924/PyVHS/main/doc/imgs/pyvhs.png" width="512" height="256" alt="pyvhs">
   </a> -->
-  A Generic PyTorch Workflow for LLMs
+  PyTorch Workflow for LLMs
 </h1>
 
 

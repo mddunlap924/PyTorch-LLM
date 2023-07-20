@@ -1,5 +1,6 @@
 import numpy as np
-from sklearn import preprocessing
+from sklearn.preprocessing import (LabelEncoder,
+                                   OneHotEncoder)
 
 
 class PreprocessData():
@@ -7,14 +8,17 @@ class PreprocessData():
                  technique: str):
         # Encoding technique
         if technique == 'LabelEncoder':
-            enc = preprocessing.LabelEncoder()
+            enc = LabelEncoder()
+            # Fit the encoder
+            enc.fit(y)
         elif technique == 'OneHotEncoder':
-            enc = preprocessing.OneHotEncoder()
+            enc = OneHotEncoder(sparse_output=False)
+            # Fit the encoder
+            y = np.array([[i] for i in np.unique(y).tolist()])
+            enc.fit(y)
         else:
             raise ValueError((f'Encoder needs to be added '
                             f'to script: {technique}'))
-        # Fit the encoder
-        enc.fit(y)
 
         # Encoder
         self.encoder = enc

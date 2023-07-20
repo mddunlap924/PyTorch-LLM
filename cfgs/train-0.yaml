@@ -33,20 +33,16 @@ cv:
 # Preprocessing
 preprocessing:
   apply_techniques:
-    - LabelEncoder
     - OneHotEncoder
   LabelEncoder:
     fields:
-      - State
+      - Product
   OneHotEncoder:
     fields:
       - Product
 
 
-
-
 # Data
-
 wandb:
   project: nlp-testing
   entity: mdunlap
@@ -60,12 +56,22 @@ model_tokenizer:
   base_dir: ../hf_download
   name: bert-base-uncased
 
+# Model
 model:
   dir: ./utils/models
   module: bert
   func: SillyTest
+
+# Tokenizer
 tokenizer:
   abbreviations:
     - Null
+  add_special_tokens: True
+  max_length: 512
+  padding: True
+  truncation: True
+  return_tensors: pt
 
-
+# Tuning
+batch_size: 16
+num_workers: 8

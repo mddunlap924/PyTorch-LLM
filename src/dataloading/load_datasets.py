@@ -22,7 +22,7 @@ def collate_fn(inputs):
 def prepare_input(tokenizer, cfg, text):
     inputs = tokenizer.encode_plus(
         text=text,
-        return_tensors=cfg.return_tensors,
+        return_tensors='pt',
         add_special_tokens=cfg.add_special_tokens,
         max_length=cfg.max_length,
         padding=cfg.padding,
@@ -35,23 +35,50 @@ def prepare_input(tokenizer, cfg, text):
 
 
 class TrainDataset(Dataset):
-    def __init__(self, df, tokenizer, tokenizer_cfg, target_cols):
-        self.tokenizer = tokenizer
-        self.tokenizer_cfg = tokenizer_cfg
-        self.texts = df['full_text'].values
-        self.labels = df[target_cols].values
+    def __init__(self,
+                 df: pd.DataFrame,
+                 tok,
+                 tok_cfg,
+                 X_cols: list[str],
+                 label: str,
+                 encoder):
+        self.df = df
+        self.tokenizer = tok
+        self.tokenizer_cfg = tok_cfg
+        self.X_cols = X_cols
+        self.label = label
+        self.encoder = encoder
+
 
     def __len__(self):
-        return len(self.texts)
+        return len(self.df)
+
 
     def __getitem__(self, idx):
+        # Extract all source fields into a list
+        texts = []
+        for col in self.X_cols:
+            if col == 'State':
+                text = f'State {self.df[col].iloc[idx]}'
+            elif col == 'Company response to consumer':
+                text = f'Response {self.df[col].iloc[idx]}'
+            elif col == 'Consumer complaint narrative':
+                text = self.df[col].iloc[idx]
+            texts.append(text)
+
+        # Combine the fields using special SEP token
+        texts = '[SEP]'.join(texts)
+
+        # Tokenize the text
         inputs = prepare_input(tokenizer=self.tokenizer,
                                cfg=self.tokenizer_cfg,
-                               text=self.texts[idx])
-        input_ids = torch.tensor(inputs['input_ids'], dtype=torch.float)
-        labels = torch.tensor(self.labels[idx], dtype=torch.float)
-        # return input_ids, labels
-        return {'input_ids': input_ids, 'labels': labels}
+                               text=texts)
+
+        # Convert labels into one-hot encoded
+        labels = self.df[self.label].iloc[idx]
+        labels = self.encoder.transform([[labels]])
+        labels = torch.tensor(labels, dtype=torch.int)
+        return {'inputs': inputs, 'labels': labels}
 
 
 class TestDataset(Dataset):
