@@ -65,6 +65,7 @@ Below are a list of deep learning techniques and tools used in the generic workf
 - PyTorch specific:
   - [Code structure](https://pytorch.org/tutorials/beginner/basics/intro.html) which is based on PyTorch's tutorial
   - [Datasets and Dataloaders](https://pytorch.org/tutorials/beginner/basics/data_tutorial.html)
+  - [Custom Collator for Efficient RAM Dynamic Padding](https://huggingface.co/docs/transformers/main/main_classes/data_collator) 
   - [Learning Rate Schedulers](https://pytorch.org/docs/stable/optim.html#how-to-adjust-learning-rate)
   - [Learning Rate Finder](https://github.com/davidtvs/pytorch-lr-finder)
   - [Performance Metrics](https://pytorch.org/torcheval/stable/torcheval.metrics.html)
@@ -98,6 +99,7 @@ This repository is will do its best to be maintained. If you face any issue or w
 - [MoviePy](https://github.com/Zulko/moviepy/tree/master)
 
 - [Wikipedia - VHS](https://en.wikipedia.org/wiki/VHS)
+- [Padding Truncation](https://huggingface.co/docs/transformers/pad_truncation)
 
 # TODOs
 - [ ] Unit tests for Python modules

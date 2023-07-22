@@ -61,6 +61,9 @@ model:
   dir: ./utils/models
   module: bert
   func: SillyTest
+  freeze:
+    apply: True
+    num_layers: 10 # Number of layers to freeze starting from layer 1
 
 # Tokenizer
 tokenizer:
@@ -71,6 +74,11 @@ tokenizer:
   padding: True
   truncation: True
   return_tensors: pt
+
+# Optimizer
+optimizer:
+  name: AdamW
+
 
 # Tuning
 batch_size: 4

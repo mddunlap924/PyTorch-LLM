@@ -62,12 +62,16 @@ class CustomTextCollator:
 
     """
 
-    def __init__(self, tokenizer, max_sequence_len=None):
+    def __init__(self, tokenizer, tokenizer_cfg, max_sequence_len=None):
 
         # Tokenizer to be used inside the class.
         self.tokenizer = tokenizer
+
+        # Tokenizer configuration
+        self.tok_cfg = tokenizer_cfg
+
         # Check max sequence length.
-        self.max_sequence_len = (tokenizer.model_max_length if max_sequence_len \
+        self.max_sequence_len = (tokenizer.max_length if max_sequence_len \
             is None else max_sequence_len)
         return
 
@@ -93,17 +97,18 @@ class CustomTextCollator:
         # Get all labels from sequences list.
         labels = [sequence['label'] for sequence in sequences]
 
-        # Call tokenizer on all texts to convert into tensors of numbers with 
+        # Call tokenizer on all texts to convert into tensors of numbers with
         # appropriate padding.
+        # https://huggingface.co/docs/transformers/pad_truncation
         inputs = self.tokenizer(text=texts,
-                                return_tensors="pt",
-                                padding=True,
-                                truncation=True,
-                                max_length=512,
+                                return_tensors=self.tok_cfg.return_tensors,
+                                padding=self.tok_cfg.padding,
+                                truncation=self.tok_cfg.truncation,
+                                max_length=self.max_sequence_len,
+                                add_special_tokens=self.tok_cfg.add_special_tokens,
                                 )
         # Update the inputs with the associated encoded labels as tensor.
         inputs.update({'labels': torch.tensor(labels)})
-
         return inputs
 
 
