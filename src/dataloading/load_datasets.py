@@ -2,6 +2,7 @@ from pathlib import Path
 import pandas as pd
 from torch.utils.data import Dataset
 import torch
+import numpy as np
 
 
 def collate(inputs):
@@ -34,6 +35,78 @@ def prepare_input(tokenizer, cfg, text):
     return inputs
 
 
+class CustomTextCollator:
+    """
+    Data Collator used for a classification task. 
+    
+    It uses a given tokenizer and label encoder to convert any text and labels to numbers that 
+    can go straight into a GPT2 model.
+
+    This class is built with reusability in mind: it can be used as is as long
+    as the `dataloader` outputs a batch in dictionary format that can be passed 
+    straight into the model - `model(**batch)`.
+
+    Arguments:
+
+      use_tokenizer (:obj:`transformers.tokenization_?`):
+          Transformer type tokenizer used to process raw text into numbers.
+
+      labels_ids (:obj:`dict`):
+          Dictionary to encode any labels names into numbers. Keys map to 
+          labels names and Values map to number associated to those labels.
+
+      max_sequence_len (:obj:`int`, `optional`)
+          Value to indicate the maximum desired sequence to truncate or pad text
+          sequences. If no value is passed it will used maximum sequence size
+          supported by the tokenizer and model.
+
+    """
+
+    def __init__(self, tokenizer, max_sequence_len=None):
+
+        # Tokenizer to be used inside the class.
+        self.tokenizer = tokenizer
+        # Check max sequence length.
+        self.max_sequence_len = (tokenizer.model_max_length if max_sequence_len \
+            is None else max_sequence_len)
+        return
+
+
+    def __call__(self, sequences):
+        """
+        This function allows the class objects to be used as a function call.
+        Since the PyTorch DataLoader needs a collator function, this 
+        class can be used as a function.
+
+        Arguments:
+
+          item (:obj:`list`):
+              List of texts and labels.
+
+        Returns:
+          :obj:`Dict[str, object]`: Dictionary of inputs that feed into the model.
+          It holds the statement `model(**Returned Dictionary)`.
+        """
+
+        # Get all texts from sequences list.
+        texts = [sequence['text'] for sequence in sequences]
+        # Get all labels from sequences list.
+        labels = [sequence['label'] for sequence in sequences]
+
+        # Call tokenizer on all texts to convert into tensors of numbers with 
+        # appropriate padding.
+        inputs = self.tokenizer(text=texts,
+                                return_tensors="pt",
+                                padding=True,
+                                truncation=True,
+                                max_length=512,
+                                )
+        # Update the inputs with the associated encoded labels as tensor.
+        inputs.update({'labels': torch.tensor(labels)})
+
+        return inputs
+
+
 class TrainDataset(Dataset):
     def __init__(self,
                  df: pd.DataFrame,
@@ -56,29 +129,23 @@ class TrainDataset(Dataset):
 
     def __getitem__(self, idx):
         # Extract all source fields into a list
-        texts = []
+        text = []
         for col in self.X_cols:
             if col == 'State':
-                text = f'State {self.df[col].iloc[idx]}'
+                feature = f'State {self.df[col].iloc[idx]}'
             elif col == 'Company response to consumer':
-                text = f'Response {self.df[col].iloc[idx]}'
+                feature = f'Response {self.df[col].iloc[idx]}'
             elif col == 'Consumer complaint narrative':
-                text = self.df[col].iloc[idx]
-            texts.append(text)
+                feature = self.df[col].iloc[idx]
+            text.append(feature)
 
         # Combine the fields using special SEP token
-        texts = '[SEP]'.join(texts)
-
-        # Tokenize the text
-        inputs = prepare_input(tokenizer=self.tokenizer,
-                               cfg=self.tokenizer_cfg,
-                               text=texts)
+        text = '[SEP]'.join(text)
 
         # Convert labels into one-hot encoded
-        labels = self.df[self.label].iloc[idx]
-        labels = self.encoder.transform([[labels]])
-        labels = torch.tensor(labels, dtype=torch.int)
-        return {'inputs': inputs, 'labels': labels}
+        label = self.df[self.label].iloc[idx]
+        label = np.squeeze(self.encoder.transform([[label]])).tolist()
+        return {'text': text, 'label': label}
 
 
 class TestDataset(Dataset):

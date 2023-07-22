@@ -73,5 +73,5 @@ tokenizer:
   return_tensors: pt
 
 # Tuning
-batch_size: 16
+batch_size: 4
 num_workers: 8
