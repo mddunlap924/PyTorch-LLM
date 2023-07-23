@@ -19,7 +19,6 @@ class PreprocessData():
         else:
             raise ValueError((f'Encoder needs to be added '
                             f'to script: {technique}'))
-
         # Encoder
         self.encoder = enc
     

@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 
+
 class RMSELoss(nn.Module):
     def __init__(self, reduction='mean', eps=1e-9):
         super().__init__()

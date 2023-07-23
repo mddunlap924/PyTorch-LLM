@@ -146,9 +146,9 @@ class TrainDataset(Dataset):
         # Combine the fields using special SEP token
         text = '[SEP]'.join(text)
 
-        # Convert labels into one-hot encoded
-        label = self.df[self.label].iloc[idx]
-        label = np.squeeze(self.encoder.transform([[label]])).tolist()
+        # Convert text labels into labels (e.g., if 18 classes then labels are 0-17)
+        label_text = self.df[self.label].iloc[idx]
+        label = self.encoder.transform([label_text]).tolist()
         return {'text': text, 'label': label}
 
 
