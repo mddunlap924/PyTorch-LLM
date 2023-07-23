@@ -62,7 +62,7 @@ class CustomTextCollator:
 
     """
 
-    def __init__(self, tokenizer, tokenizer_cfg, max_sequence_len=None):
+    def __init__(self, tokenizer, tokenizer_cfg):
 
         # Tokenizer to be used inside the class.
         self.tokenizer = tokenizer
@@ -71,8 +71,7 @@ class CustomTextCollator:
         self.tok_cfg = tokenizer_cfg
 
         # Check max sequence length.
-        self.max_sequence_len = (tokenizer.max_length if max_sequence_len \
-            is None else max_sequence_len)
+        self.max_sequence_len = tokenizer_cfg.max_length
         return
 
 

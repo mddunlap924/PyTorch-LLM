@@ -71,6 +71,7 @@ Below are a list of deep learning techniques and tools used in the generic workf
   - [Performance Metrics](https://pytorch.org/torcheval/stable/torcheval.metrics.html)
 - [HuggingFace Transformers](https://huggingface.co/docs/transformers/index) 
 - [Gradient Accumulation](https://kozodoi.me/blog/20210219/gradient-accumulation)
+- [Fast Tokenizers](https://huggingface.co/docs/transformers/v4.19.3/en/model_doc/auto#transformers.AutoTokenizer.from_pretrained.use_fast)
 - [Cross-Validation Training](https://neptune.ai/blog/cross-validation-in-machine-learning-how-to-do-it-right)
 - [Tensorboards for Experiment Tracking](https://pytorch.org/tutorials/intermediate/tensorboard_tutorial.html) 
 - [Visualizing Learning Curves for Model Diagnosis](https://rstudio-conf-2020.github.io/dl-keras-tf/notebooks/learning-curve-diagnostics.nb.html#:~:text=Overfit%20learning%20curves,a%20greater%20number%20of%20parameters.)

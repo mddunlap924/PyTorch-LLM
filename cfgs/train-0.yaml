@@ -63,7 +63,11 @@ model:
   func: SillyTest
   freeze:
     apply: True
-    num_layers: 10 # Number of layers to freeze starting from layer 1
+    # Number of layers to freeze starting from layer 1
+    num_layers: 10 
+  mean_pooling:
+    apply: False
+  gradient_checkpointing: True
 
 # Tokenizer
 tokenizer:

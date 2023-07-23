@@ -17,50 +17,73 @@ class MeanPooling(nn.Module):
 
 
 class CustomModel(nn.Module):
-    def __init__(self, cfg, config_path=None, pretrained=False):
-        super().__init__()
+    def __init__(self,
+                 llm_model_path,
+                 cfg,
+                 num_classes):
+        super(CustomModel, self).__init__()
+        # Path to model flat files
+        self.llm_model_path = llm_model_path
+
+        # Custom config information for the model specified in YAML file
         self.cfg = cfg
-        if config_path is None:
-            self.config = AutoConfig.from_pretrained(cfg.model, 
-                                                     output_hidden_states=True,
-                                                     )
-            self.config.hidden_dropout = 0.
-            self.config.hidden_dropout_prob = 0.
-            self.config.attention_dropout = 0.
-            self.config.attention_probs_dropout_prob = 0.
-            # LOGGER.info(self.config)
-        else:
-            self.config = torch.load(config_path)
-        if pretrained:
-            self.model = AutoModel.from_pretrained(cfg.model, config=self.config)
-        else:
-            self.model = AutoModel(self.config)
+
+        # Number of classes / labels
+        self.num_classes = num_classes
+
+        # HF AutoConfig
+        self.llm_model_config = AutoConfig.from_pretrained(llm_model_path)
+
+        # HF AutoModel
+        self.llm_model = AutoModel.from_config(self.llm_model_config)
+
+        # Freeze Layers if Specified
+        # https://discuss.huggingface.co/t/how-to-freeze-some-layers-of-bertmodel/917/4
+        if cfg.freeze.apply:
+            # Use modules to specify order
+            modules = [self.llm_model.embeddings,
+                       self.llm_model.encoder.layer[:cfg.freeze.num_layers]]
+            for module in modules:
+                for param in module.parameters():
+                    param.requires_grad = False
+
+        # Gradient checkpointing
         if self.cfg.gradient_checkpointing:
-            self.model.gradient_checkpointing_enable()
+            self.llm_model.gradient_checkpointing_enable()
+
+        # Mean Pooling [TODO more testing needed here]
         self.pool = MeanPooling()
-        self.fc = nn.Linear(self.config.hidden_size, 6)
+
+        # Dense layer for classification and weight initialization
+        self.fc = nn.Linear(self.llm_model_config.hidden_size, num_classes)
         self._init_weights(self.fc)
 
+
     def _init_weights(self, module):
+        "Initialize weights for classification weights for dense layer"
         if isinstance(module, nn.Linear):
-            module.weight.data.normal_(mean=0.0, std=self.config.initializer_range)
+            module.weight.data.normal_(mean=0.0,
+                                       std=self.llm_model_config.initializer_range)
             if module.bias is not None:
                 module.bias.data.zero_()
         elif isinstance(module, nn.Embedding):
-            module.weight.data.normal_(mean=0.0, std=self.config.initializer_range)
+            module.weight.data.normal_(mean=0.0,
+                                       std=self.llm_model_config.initializer_range)
             if module.padding_idx is not None:
                 module.weight.data[module.padding_idx].zero_()
         elif isinstance(module, nn.LayerNorm):
             module.bias.data.zero_()
             module.weight.data.fill_(1.0)
 
-    def feature(self, inputs):
-        outputs = self.model(**inputs)
-        last_hidden_states = outputs[0]
-        feature = self.pool(last_hidden_states, inputs['attention_mask'])
-        return feature
 
     def forward(self, inputs):
-        feature = self.feature(inputs)
+        # Outputs from model
+        outputs = self.llm_model(**inputs)
+        last_hidden_states = outputs[0]
+        # Pooling
+        if self.cfg.pooling.apply:
+            feature = self.pool(last_hidden_states, inputs['attention_mask'])
+        else:
+            feature = last_hidden_states
         output = self.fc(feature)
         return output
