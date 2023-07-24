@@ -67,7 +67,7 @@ model:
     num_layers: 10 
   mean_pooling:
     apply: False
-  gradient_checkpointing: True
+  gradient_checkpointing: False
 
 # Tokenizer
 tokenizer:
@@ -90,9 +90,7 @@ optimizer:
 lr_scheduler:
   name: OneCycleLR
 
-
-
 # Tuning
-epochs: 4
-batch_size: 4
+epochs: 1
+batch_size: 128
 num_workers: 8

@@ -47,7 +47,7 @@ class CustomModel(nn.Module):
                 for param in module.parameters():
                     param.requires_grad = False
 
-        # Gradient checkpointing
+        # Gradient checkpointing [TODO check this]
         if self.cfg.gradient_checkpointing:
             self.llm_model.gradient_checkpointing_enable()
 
@@ -57,6 +57,9 @@ class CustomModel(nn.Module):
         # Dense layer for classification and weight initialization
         self.fc = nn.Linear(self.llm_model_config.hidden_size, num_classes)
         self._init_weights(self.fc)
+
+        # Sigmoid activation
+        self.sigmoid = nn.Sigmoid()
 
 
     def _init_weights(self, module):
@@ -78,12 +81,14 @@ class CustomModel(nn.Module):
 
     def forward(self, inputs):
         # Outputs from model
-        outputs = self.llm_model(**inputs)
-        last_hidden_states = outputs[0]
+        llm_outputs = self.llm_model(**inputs)
         # Pooling
-        if self.cfg.pooling.apply:
-            feature = self.pool(last_hidden_states, inputs['attention_mask'])
-        else:
-            feature = last_hidden_states
-        output = self.fc(feature)
-        return output
+        feature = self.pool(last_hidden_state=llm_outputs[0],
+                            attention_mask=inputs['attention_mask'])
+        # Dense layer
+        logits = self.fc(feature)
+        # output = self.sigmoid(output)
+        return logits
+
+
+

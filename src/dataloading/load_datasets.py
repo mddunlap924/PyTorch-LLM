@@ -148,7 +148,7 @@ class TrainDataset(Dataset):
 
         # Convert text labels into labels (e.g., if 18 classes then labels are 0-17)
         label_text = self.df[self.label].iloc[idx]
-        label = self.encoder.transform([label_text]).tolist()
+        label = self.encoder.transform([label_text])[0]
         return {'text': text, 'label': label}
 
 
