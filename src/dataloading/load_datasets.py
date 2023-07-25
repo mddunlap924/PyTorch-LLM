@@ -5,36 +5,6 @@ import torch
 import numpy as np
 
 
-def collate(inputs):
-    mask_len = int(inputs["attention_mask"].sum(axis=1).max())
-    for k, v in inputs.items():
-        inputs[k] = inputs[k][:,:mask_len]
-    return inputs
-
-
-def collate_fn(inputs):
-    mask_len = max([int(i[0]['attention_mask'].sum()) for i in inputs])
-    for count, input in enumerate(inputs):
-        for k, v in input[0].items():
-            inputs[count][0][k] = input[0][k][:mask_len]
-    return inputs
-
-
-def prepare_input(tokenizer, cfg, text):
-    inputs = tokenizer.encode_plus(
-        text=text,
-        return_tensors='pt',
-        add_special_tokens=cfg.add_special_tokens,
-        max_length=cfg.max_length,
-        padding=cfg.padding,
-        truncation=cfg.truncation,
-    )
-    # for k, v in inputs.items():
-    #     inputs[k] = torch.tensor(v, dtype=torch.long)
-
-    return inputs
-
-
 class CustomTextCollator:
     """
     Data Collator used for a classification task. 
@@ -107,7 +77,7 @@ class CustomTextCollator:
                                 add_special_tokens=self.tok_cfg.add_special_tokens,
                                 )
         # Update the inputs with the associated encoded labels as tensor.
-        inputs.update({'labels': torch.tensor(labels)})
+        inputs.update({'labels': torch.tensor(labels, dtype=torch.long)})
         return inputs
 
 
@@ -135,10 +105,10 @@ class TrainDataset(Dataset):
         # Extract all source fields into a list
         text = []
         for col in self.X_cols:
-            if col == 'State':
-                feature = f'State {self.df[col].iloc[idx]}'
-            elif col == 'Company response to consumer':
-                feature = f'Response {self.df[col].iloc[idx]}'
+            if col == 'Issue':
+                feature = f'Issue {self.df[col].iloc[idx]}'
+            elif col == 'Sub-issue':
+                feature = f'{self.df[col].iloc[idx]}'
             elif col == 'Consumer complaint narrative':
                 feature = self.df[col].iloc[idx]
             text.append(feature)

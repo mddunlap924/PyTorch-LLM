@@ -56,10 +56,7 @@ class CustomModel(nn.Module):
 
         # Dense layer for classification and weight initialization
         self.fc = nn.Linear(self.llm_model_config.hidden_size, num_classes)
-        self._init_weights(self.fc)
-
-        # Sigmoid activation
-        self.sigmoid = nn.Sigmoid()
+        # self._init_weights(self.fc)
 
 
     def _init_weights(self, module):
@@ -82,13 +79,10 @@ class CustomModel(nn.Module):
     def forward(self, inputs):
         # Outputs from model
         llm_outputs = self.llm_model(**inputs)
-        # Pooling
-        feature = self.pool(last_hidden_state=llm_outputs[0],
-                            attention_mask=inputs['attention_mask'])
+        feature = llm_outputs.pooler_output
+        # # Pooling
+        # feature = self.pool(last_hidden_state=llm_outputs[0],
+        #                     attention_mask=inputs['attention_mask'])
         # Dense layer
         logits = self.fc(feature)
-        # output = self.sigmoid(output)
         return logits
-
-
-

@@ -1,13 +1,13 @@
 # YAML file listing config. parameters
 seed: 42
-lr: 0.5
 
 # Paths
 paths:
   data:
     base_dir: ../data
-    data: cfpb.csv
+    data: cfpb_partial.csv
     debug_data: cfpb_debug.csv
+    partial: cfpb.csv
 
 # DEBUG [True or False]; if False it will load the debug_data
 # Use for pipeline development
@@ -17,8 +17,8 @@ debug: False
 data_info:
   source_fields:
     - Consumer complaint narrative
-    - State
-    - Company response to consumer
+    - Issue
+    - Sub-issue
   target: Product
 
 # Stratification Technique
@@ -62,9 +62,9 @@ model:
   module: bert
   func: SillyTest
   freeze:
-    apply: True
+    apply: False
     # Number of layers to freeze starting from layer 1
-    num_layers: 10 
+    num_layers: 5 
   mean_pooling:
     apply: False
   gradient_checkpointing: False
@@ -84,13 +84,15 @@ optimizer:
   name: AdamW
   lr:
     min: 1.0E-5
-    max: 1.0E-3
+    max: 1.0E-1
 
 # Learning Rate Scheduler
 lr_scheduler:
-  name: OneCycleLR
+  name: CosineAnnealingLR
+  OneCycleLR:
+    pct_start: 0.1
 
 # Tuning
 epochs: 1
-batch_size: 128
+batch_size: 16
 num_workers: 8
