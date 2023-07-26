@@ -3,6 +3,7 @@ import pandas as pd
 from torch.utils.data import Dataset
 import torch
 import numpy as np
+from torch.utils.data import DataLoader
 
 
 class CustomTextCollator:
@@ -102,19 +103,21 @@ class TrainDataset(Dataset):
 
 
     def __getitem__(self, idx):
-        # Extract all source fields into a list
-        text = []
-        for col in self.X_cols:
-            if col == 'Issue':
-                feature = f'Issue {self.df[col].iloc[idx]}'
-            elif col == 'Sub-issue':
-                feature = f'{self.df[col].iloc[idx]}'
-            elif col == 'Consumer complaint narrative':
-                feature = self.df[col].iloc[idx]
-            text.append(feature)
+        # # Extract all source fields into a list
+        # text = []
+        # for col in self.X_cols:
+        #     if col == 'Issue':
+        #         feature = f'Issue {self.df[col].iloc[idx]}'
+        #     elif col == 'Sub-issue':
+        #         feature = f'{self.df[col].iloc[idx]}'
+        #     elif col == 'Consumer complaint narrative':
+        #         feature = self.df[col].iloc[idx]
+        #     text.append(feature)
 
-        # Combine the fields using special SEP token
-        text = '[SEP]'.join(text)
+        # # Combine the fields using special SEP token
+        # text = '[SEP]'.join(text)
+        # Extract all source fields into a list
+        text = self.df['Consumer complaint narrative'].iloc[idx]
 
         # Convert text labels into labels (e.g., if 18 classes then labels are 0-17)
         label_text = self.df[self.label].iloc[idx]
@@ -137,3 +140,28 @@ class TestDataset(Dataset):
                                text=self.texts[item])
         input_ids = torch.tensor(inputs['input_ids'], dtype=torch.float)
         return {'input_ids': input_ids}
+
+
+def get_ds_dl(df,
+              cfg,
+              tokenizer,
+              encoder,
+              collator):
+    "Get the PyTorch Dataset (ds) and Dataloader (dl)"
+    # Dataset 
+    ds = TrainDataset(df=df,
+                      tok=tokenizer,
+                      tok_cfg=cfg.tokenizer,
+                      X_cols=cfg.data_info.source_fields,
+                      label=cfg.data_info.target,
+                      encoder=encoder)
+
+    # Dataloader
+    dl = DataLoader(ds,
+                    batch_size=cfg.batch_size,
+                    collate_fn=collator,
+                    shuffle=True,
+                    num_workers=cfg.num_workers,
+                    pin_memory=True,
+                    )
+    return ds, dl

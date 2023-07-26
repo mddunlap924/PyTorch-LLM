@@ -23,6 +23,9 @@ TRANSFORMERS_OFFLINE=1
 
 # HF Parallelism 
 TOKENIZERS_PARALLELISM=True
+
+# HF No Advisory Warnings 
+TRANSFORMERS_NO_ADVISORY_WARNINGS=True
 ```
 
 ### Step 2. 

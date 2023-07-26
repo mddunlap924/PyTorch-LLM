@@ -85,9 +85,13 @@ def seed_everything(*, seed: int=42):
 class RunIDs():
     def __init__(self,
                  test_folds: list,
-                 num_folds: int):
+                 num_folds: int,
+                 save_dir: str,
+                 save_results: bool):
         self.test_folds = test_folds
         self.num_folds = num_folds
+        self.save_dir = Path(save_dir)
+        self.save_results = save_results
         self.group_id = str
         self.folds_id = RecursiveNamespace
 
@@ -96,6 +100,10 @@ class RunIDs():
             self.test_all_folds = True
         else:
             self.test_all_folds = False
+
+        # Check if base directory for saving results exists
+        if (not Path(save_dir).exists()) and save_results:
+            raise Exception('Base Dir. for Saving Results Does NOT Exist')
 
 
     def generate_id(self):
@@ -107,49 +115,21 @@ class RunIDs():
         # Get a group id (i.e. ID that will organize all folds)
         self.group_id = self.generate_id()
 
+        # Info. for each data fold
         fold_info = {}
         for fold in self.test_folds:
-            fold_info[f'fold{fold}'] = {'run_id': self.generate_id()}
+            # Create directory for each fold
+            fold_dir = self.save_dir / self.group_id / f'fold{fold}of{self.num_folds}'
+            if self.save_results:
+                fold_dir.mkdir(parents=True)
+                save_path = fold_dir
+            else:
+                save_path = None
+
+            # Store info
+            fold_info[f'fold{fold}'] = {'run_id': self.generate_id(),
+                                        'save': self.save_results,
+                                        'path': save_path,
+                                        'fold_num': fold}
         self.folds_id = RecursiveNamespace(**fold_info)
         return
-
-
-
-# class WandB:
-#     """ Log results for Weights & Biases """
-
-#     def __init__(self, cfg, group_id):
-#         del cfg.checkpoint, cfg.tokenizer
-#         self.cfg = cfg
-#         self.group_id = group_id
-#         self.job_type = wandb.util.generate_id()
-#         self.version = wandb.util.generate_id()
-#         self.run_name = f'{self.group_id}_{self.job_type}'
-#         self.id = wandb.util.generate_id()  # Generate version name for tracking in wandb
-#         # WandB Key in the environment variables
-#         if 'WANDB_KEY' in os.environ:
-#             self.key = os.environ['WANDB_KEY']
-#         else:
-#             self.key = None
-
-#     def login_to_wandb(self):
-#         # Store WandB key in the environment variables
-#         if self.key is not None:
-#             wandb.login(key=self.key)
-#         else:
-#             print('Not logging info in WandB')
-
-#     def get_logger(self):
-#         self.login_to_wandb()
-#         wb_logger = pl_loggers.WandbLogger(project=self.cfg.wandb_project,
-#                                             group=self.group_id,
-#                                             job_type=self.job_type,
-#                                             name=self.run_name,
-#                                             version=self.version,
-#                                             config=self.cfg,
-#                                             )
-
-#         return wb_logger
-
-
-

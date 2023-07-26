@@ -1,6 +1,6 @@
 import torch
 from torch import nn
-from transformers import AutoModel, AutoConfig
+from transformers import AutoModel, AutoConfig, BertModel
 
 
 class MeanPooling(nn.Module):
@@ -35,24 +35,25 @@ class CustomModel(nn.Module):
         self.llm_model_config = AutoConfig.from_pretrained(llm_model_path)
 
         # HF AutoModel
-        self.llm_model = AutoModel.from_config(self.llm_model_config)
+        # self.llm_model = AutoModel.from_config(self.llm_model_config)
+        self.llm_model = BertModel.from_pretrained(llm_model_path)
 
-        # Freeze Layers if Specified
-        # https://discuss.huggingface.co/t/how-to-freeze-some-layers-of-bertmodel/917/4
-        if cfg.freeze.apply:
-            # Use modules to specify order
-            modules = [self.llm_model.embeddings,
-                       self.llm_model.encoder.layer[:cfg.freeze.num_layers]]
-            for module in modules:
-                for param in module.parameters():
-                    param.requires_grad = False
+        # # Freeze Layers if Specified
+        # # https://discuss.huggingface.co/t/how-to-freeze-some-layers-of-bertmodel/917/4
+        # if cfg.freeze.apply:
+        #     # Use modules to specify order
+        #     modules = [self.llm_model.embeddings,
+        #                self.llm_model.encoder.layer[:cfg.freeze.num_layers]]
+        #     for module in modules:
+        #         for param in module.parameters():
+        #             param.requires_grad = False
 
-        # Gradient checkpointing [TODO check this]
-        if self.cfg.gradient_checkpointing:
-            self.llm_model.gradient_checkpointing_enable()
+        # # Gradient checkpointing [TODO check this]
+        # if self.cfg.gradient_checkpointing:
+        #     self.llm_model.gradient_checkpointing_enable()
 
-        # Mean Pooling [TODO more testing needed here]
-        self.pool = MeanPooling()
+        # # Mean Pooling [TODO more testing needed here]
+        # self.pool = MeanPooling()
 
         # Dense layer for classification and weight initialization
         self.fc = nn.Linear(self.llm_model_config.hidden_size, num_classes)

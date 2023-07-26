@@ -13,7 +13,6 @@ class LoadData:
         """
         :param base_dir: Directory data files are stored
         """
-
         self.base_dir = Path(base_dir)
 
 
