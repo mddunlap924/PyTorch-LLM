@@ -1,16 +1,17 @@
 # YAML file listing config. parameters
+seed: 42
 
 # Paths
 paths:
   data:
-    base_dir: ../data
+    base_dir: ./data
     data: cfpb_partial.csv
     debug_data: cfpb_debug.csv
     partial: cfpb.csv
   save_results:
     apply_model: False # Save model weights [boolean: True/False]
     apply_metric: True # Save performane metrics [boolean: True/False]
-    base_dir: ../logs
+    base_dir: ./logs
 
 # DEBUG [True or False]; if False it will load the debug_data
 # Use for pipeline development
@@ -44,9 +45,19 @@ preprocessing:
     fields:
       - Product
 
+
+# Data
+wandb:
+  project: nlp-testing
+  entity: mdunlap
+  log_results: True
+  interval_type: steps #[epochs, steps]
+  interval_delta: 1 #[int describing numer of intervals]
+
+
 # Model and Tokenizer
 model_tokenizer:
-  base_dir: ../hf_download
+  base_dir: ./hf_download
   name: bert-base-uncased
 
 # Model
@@ -54,14 +65,12 @@ model:
   freeze:
     apply: True
     # Number of layers to freeze starting from layer 1
-    num_layers: 10
-  # Custom LLM Pooling
+    num_layers: 10 
   mean_pooling:
     apply: True
-  # Gradient checkpointing
   gradient_checkpointing: False
 
-# Tokenizer parameters
+# Tokenizer
 tokenizer:
   abbreviations:
     - Null
@@ -83,10 +92,8 @@ lr_scheduler:
   name: CosineAnnealingLR
   OneCycleLR:
     pct_start: 0.1
-  CosineAnnealingLR:
 
-
-# Model Tuning
+# Tuning
 epochs: 10
 batch_size: 16
 num_workers: 8

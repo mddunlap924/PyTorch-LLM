@@ -5,3 +5,5 @@ __pycache__/
 .ipynb_checkpoints/
 data/
 hf_download/
+*.pt
+*.pickle

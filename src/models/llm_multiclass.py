@@ -35,29 +35,29 @@ class CustomModel(nn.Module):
         self.llm_model_config = AutoConfig.from_pretrained(llm_model_path)
 
         # HF AutoModel
-        # self.llm_model = AutoModel.from_config(self.llm_model_config)
-        self.llm_model = BertModel.from_pretrained(llm_model_path)
+        self.llm_model = AutoModel.from_pretrained(llm_model_path,
+                                                   config=self.llm_model_config)
 
-        # # Freeze Layers if Specified
-        # # https://discuss.huggingface.co/t/how-to-freeze-some-layers-of-bertmodel/917/4
-        # if cfg.freeze.apply:
-        #     # Use modules to specify order
-        #     modules = [self.llm_model.embeddings,
-        #                self.llm_model.encoder.layer[:cfg.freeze.num_layers]]
-        #     for module in modules:
-        #         for param in module.parameters():
-        #             param.requires_grad = False
+        # Freeze Layers if Specified
+        # https://discuss.huggingface.co/t/how-to-freeze-some-layers-of-bertmodel/917/4
+        if cfg.freeze.apply:
+            # Use modules to specify order
+            modules = [self.llm_model.embeddings,
+                       self.llm_model.encoder.layer[:cfg.freeze.num_layers]]
+            for module in modules:
+                for param in module.parameters():
+                    param.requires_grad = False
 
-        # # Gradient checkpointing [TODO check this]
-        # if self.cfg.gradient_checkpointing:
-        #     self.llm_model.gradient_checkpointing_enable()
+        # Gradient checkpointing [TODO check this]
+        if self.cfg.gradient_checkpointing:
+            self.llm_model.gradient_checkpointing_enable()
 
-        # # Mean Pooling [TODO more testing needed here]
-        # self.pool = MeanPooling()
+        # Mean Pooling [TODO more testing needed here]
+        self.pool = MeanPooling()
 
         # Dense layer for classification and weight initialization
         self.fc = nn.Linear(self.llm_model_config.hidden_size, num_classes)
-        # self._init_weights(self.fc)
+        self._init_weights(self.fc)
 
 
     def _init_weights(self, module):
@@ -80,10 +80,16 @@ class CustomModel(nn.Module):
     def forward(self, inputs):
         # Outputs from model
         llm_outputs = self.llm_model(**inputs)
-        feature = llm_outputs.pooler_output
-        # # Pooling
-        # feature = self.pool(last_hidden_state=llm_outputs[0],
-        #                     attention_mask=inputs['attention_mask'])
+        # Apply custom pooling
+        if self.cfg.mean_pooling.apply:
+            feature = self.pool(last_hidden_state=llm_outputs.last_hidden_state,
+                                attention_mask=inputs['attention_mask'])
+        else:
+            #CLS default pooling
+            feature = llm_outputs.pooler_output
+        # Pooling
+        feature = self.pool(last_hidden_state=llm_outputs[0],
+                            attention_mask=inputs['attention_mask'])
         # Dense layer
         logits = self.fc(feature)
         return logits

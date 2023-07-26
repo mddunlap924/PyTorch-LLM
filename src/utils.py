@@ -10,6 +10,7 @@ import random
 import yaml
 import numpy as np
 import torch
+import matplotlib.pyplot as plt
 
 
 class RecursiveNamespace(SimpleNamespace):
@@ -133,3 +134,32 @@ class RunIDs():
                                         'fold_num': fold}
         self.folds_id = RecursiveNamespace(**fold_info)
         return
+
+
+def plot_perf_metric_to_disk(save_path: str,
+                             x: list,
+                             y_train: list,
+                             y_val: list,
+                             metric_name: str) -> None:
+    """
+    Save a Epoch vs. Performance Metric Plot to Disk
+
+    Args:
+        save_path (str): Full path for the saved image
+        x (list): Epochs
+        y_train (list): Performance metric values for training data
+        y_val (list): Performance metric values for val data
+        metric_name: Name of the performance metric
+    """
+
+    # Create the plot
+    fig, ax = plt.subplots(nrows=1, ncols=1)
+    ax.plot(x, y_train, 'tab:blue', x, y_val, 'tab:orange')
+    ax.legend(['train', 'val.'])
+    ax.set_xlabel('Epochs')
+    ax.set_ylabel(f'{metric_name}')
+    fig.savefig(save_path)
+    plt.close(fig)
+    print((f'\tSaved Image at: {str(save_path)}'))
+    return
+    
