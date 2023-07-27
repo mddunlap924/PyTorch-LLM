@@ -20,7 +20,7 @@ debug: False
 data_info:
   source_fields:
     - Consumer complaint narrative
-    - Issue
+    - ZIP code
     - Sub-issue
   target: Product
 

@@ -132,6 +132,8 @@ def workflow():
         print(f'Completed Training Fold {fold_num}\n')
 
         # Clean up
+        del (tokenizer, collator, train_dataloader, val_dataloader,
+             model_save_path, perf_metrics, encoders, df_train, df_val)
         _ = gc.collect()
     return
 

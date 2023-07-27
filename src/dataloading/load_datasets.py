@@ -103,21 +103,21 @@ class TrainDataset(Dataset):
 
 
     def __getitem__(self, idx):
-        # # Extract all source fields into a list
-        # text = []
-        # for col in self.X_cols:
-        #     if col == 'Issue':
-        #         feature = f'Issue {self.df[col].iloc[idx]}'
-        #     elif col == 'Sub-issue':
-        #         feature = f'{self.df[col].iloc[idx]}'
-        #     elif col == 'Consumer complaint narrative':
-        #         feature = self.df[col].iloc[idx]
-        #     text.append(feature)
-
-        # # Combine the fields using special SEP token
-        # text = '[SEP]'.join(text)
         # Extract all source fields into a list
-        text = self.df['Consumer complaint narrative'].iloc[idx]
+        text = []
+        for col in self.X_cols:
+            if col == 'ZIP code':
+                feature = f'Zip code {self.df[col].iloc[idx]}'
+            elif col == 'Sub-issue':
+                feature = f'{self.df[col].iloc[idx]}'
+            elif col == 'Consumer complaint narrative':
+                feature = self.df[col].iloc[idx]
+            text.append(feature)
+
+        # Combine the fields using special SEP token
+        text = '[SEP]'.join(text)
+        # Extract all source fields into a list
+        # text = self.df['Consumer complaint narrative'].iloc[idx]
 
         # Convert text labels into labels (e.g., if 18 classes then labels are 0-17)
         label_text = self.df[self.label].iloc[idx]
