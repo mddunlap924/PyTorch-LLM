@@ -31,7 +31,7 @@ stratify:
 
 # Cross-Validation Folds
 cv:
-  num_folds: 5
+  num_folds: 2
   val_folds: [1] #[list of integers] (start counting at 1)
 
 # Preprocessing
@@ -55,7 +55,7 @@ model:
   freeze:
     apply: False
     # Number of layers to freeze starting from layer 1
-    num_layers: 5 
+    num_layers: 0 
   mean_pooling:
     apply: True
   gradient_checkpointing: False
@@ -74,7 +74,6 @@ tokenizer:
 optimizer:
   name: AdamW
   lr:
-    min: 1.0E-5
     max: 1.0E-4
 
 # Learning Rate Scheduler
@@ -86,6 +85,8 @@ lr_scheduler:
     eta_min: 1.0E-5
 
 # Tuning
-epochs: 1
+epochs: 15
 batch_size: 16
 num_workers: 8
+eval_metric:
+  name: loss

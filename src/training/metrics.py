@@ -1,5 +1,6 @@
 import math
 from sklearn.metrics import mean_squared_error
+import numpy as np
 
 
 def MCRMSE(y_trues, y_preds):

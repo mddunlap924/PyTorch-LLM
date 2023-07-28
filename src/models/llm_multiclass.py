@@ -52,7 +52,7 @@ class CustomModel(nn.Module):
         if self.cfg.gradient_checkpointing:
             self.llm_model.gradient_checkpointing_enable()
 
-        # Mean Pooling [TODO more testing needed here]
+        # Mean Pooling
         self.pool = MeanPooling()
 
         # Dense layer for classification and weight initialization

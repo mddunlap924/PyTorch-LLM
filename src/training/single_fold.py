@@ -3,6 +3,8 @@ import time
 from pathlib import Path
 from tqdm import tqdm
 import pickle
+import numpy as np
+from sklearn.utils.class_weight import compute_class_weight
 import torch
 from torch import nn
 from torch.nn.functional import one_hot
@@ -48,10 +50,23 @@ def train_fold(train_dl,
     # Learning Rate Scheduler
     scheduler = CosineAnnealingLR(optimizer,
                                   T_max=total_steps,
-                                  eta_min=cfg.optimizer.lr.min)
+                                  eta_min=(cfg
+                                           .lr_scheduler
+                                           .CosineAnnealingLR.eta_min))
 
     # Batch size
     batch_size = cfg.batch_size
+
+    # #Compute the class weights
+    # train_labels = encoders['Product']['encoder'].transform(df_train['Product'])
+    # class_wts = compute_class_weight('balanced',
+    #                                  classes=np.unique(train_labels),
+    #                                  y=train_labels)
+
+    # # convert class weights to tensor
+    # weights= torch.tensor(class_wts, dtype=torch.float)
+    # weights = weights.to(DEVICE)
+    # #the weights can be provided to CrossEntropyLoss to help with imbalance
 
     # Loss Function
     loss_fn = nn.CrossEntropyLoss()
