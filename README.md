@@ -102,7 +102,7 @@ Review this [EDA - Jupyter Notebook](./notebooks/eda.ipynb) for a brief explorat
 ### [2.) Model Training Walkthrough - Jupyter Notebook](./notebooks/training.ipynb)
 Use this notebook to train a model via a [single configuration file](./cfgs/train-0-notebook.yaml), with supplementary pre-training tasks and further analysis techniques for model selection.
 
-### [3.) Model Training Script - Python Script](./scripts/training.ipynb)
+### [3.) Model Training Script - Python Script](./scripts/train_model.py)
 This script offers robust long-term training routines across various [configuration files](./cfgs/train-1.yaml) and can be paired with this [bash shell script](./bash/train-all-cfgs.sh) for full automation of model development and experiments, ideal for prolonged runs and allowing your computer to work autonomously.
 
 # Deep Learning Techniques
