@@ -1,0 +1,92 @@
+# YAML file listing config. parameters
+seed: 42
+
+# Paths
+paths:
+  data:
+    base_dir: ../data
+    data: cfpb_partial.csv
+    debug_data: cfpb_debug.csv
+    partial: cfpb.csv
+  save_results:
+    apply_model: False # Save model weights [boolean: True/False]
+    apply_metric: True # Save performance metrics [boolean: True/False]
+    base_dir: ../logs
+
+# DEBUG [True or False]; if False it will load the debug_data
+# Use for pipeline development
+debug: False
+
+# DATA
+data_info:
+  source_fields:
+    - Consumer complaint narrative
+    - ZIP code
+    - Sub-issue
+  target: Product
+
+# Stratification Technique
+stratify:
+  technique: stratified_kfold
+
+# Cross-Validation Folds
+cv:
+  num_folds: 2
+  val_folds: [1] #[list of integers] (start counting at 1)
+
+# Preprocessing
+preprocessing:
+  apply_techniques:
+    - LabelEncoder
+  LabelEncoder:
+    fields:
+      - Product
+  OneHotEncoder:
+    fields:
+      - Product
+
+# Model and Tokenizer
+model_tokenizer:
+  base_dir: ../hf_download
+  name: bert-base-uncased
+
+# Model
+model:
+  freeze:
+    apply: False
+    # Number of layers to freeze starting from layer 1
+    num_layers: 0 
+  mean_pooling:
+    apply: True
+  gradient_checkpointing: False
+
+# Tokenizer
+tokenizer:
+  abbreviations:
+    - Null
+  add_special_tokens: True
+  max_length: 512
+  padding: True
+  truncation: True
+  return_tensors: pt
+
+# Optimizer
+optimizer:
+  name: AdamW
+  lr:
+    max: 1.0E-4
+
+# Learning Rate Scheduler
+lr_scheduler:
+  name: CosineAnnealingLR
+  OneCycleLR:
+    pct_start: 0.1
+  CosineAnnealingLR:
+    eta_min: 1.0E-5
+
+# Tuning
+epochs: 15
+batch_size: 16
+num_workers: 8
+eval_metric:
+  name: loss
