@@ -70,7 +70,7 @@ def workflow():
             fields = getattr(CFG.preprocessing, technique).fields
             for col in fields:
                 enc = PreprocessData(y=df_train[col].values,
-                                    technique=technique)
+                                     technique=technique)
                 encoders[col] = {'encoder': enc.encoder,
                                 'technique': technique}
 
@@ -82,15 +82,15 @@ def workflow():
 
         # Collator
         collator = CustomTextCollator(tokenizer=tokenizer,
-                                    tokenizer_cfg=CFG.tokenizer)
+                                      tokenizer_cfg=CFG.tokenizer)
 
         # Train Dataset and Dataloader
         (_,
         train_dataloader) = get_ds_dl(df=df_train,
-                                    cfg=CFG,
-                                    tokenizer=tokenizer,
-                                    encoder=encoders[CFG.data_info.target]['encoder'],
-                                    collator=collator)
+                                      cfg=CFG,
+                                      tokenizer=tokenizer,
+                                      encoder=encoders[CFG.data_info.target]['encoder'],
+                                      collator=collator)
         # Validation Dataset and Dataloader
         (_,
         val_dataloader) = get_ds_dl(df=df_val,
@@ -111,12 +111,11 @@ def workflow():
 
         # Training for a single fold
         perf_metrics = train_fold(train_dl=train_dataloader,
-                                val_dl=val_dataloader,
-                                cfg=CFG,
-                                device=DEVICE,
-                                n_classes=df_train[CFG.data_info.target].nunique(),
-                                model_save_path=model_save_path,
-                                )
+                                  val_dl=val_dataloader,
+                                  cfg=CFG,
+                                  device=DEVICE,
+                                  n_classes=df_train[CFG.data_info.target].nunique(),
+                                  model_save_path=model_save_path)
 
         # Save plots of performance metrics to disk for visual assessment
         if CFG.paths.save_results.apply_metric:
@@ -124,11 +123,10 @@ def workflow():
             for metric_name in ['loss', 'f1', 'precision', 'recall']:
                 save_path = model_save_path / f'{metric_name}.png'
                 plot_perf_metric_to_disk(save_path=save_path,
-                                        x=epochs,
-                                        y_train=perf_metrics[f'train_{metric_name}'],
-                                        y_val=perf_metrics[f'val_{metric_name}'],
-                                        metric_name=metric_name,
-                                        )
+                                         x=epochs,
+                                         y_train=perf_metrics[f'train_{metric_name}'],
+                                         y_val=perf_metrics[f'val_{metric_name}'],
+                                         metric_name=metric_name)
         print(f'Completed Training Fold {fold_num}\n')
 
         # Clean up

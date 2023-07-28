@@ -101,6 +101,8 @@ This repository is will do its best to be maintained. If you face any issue or w
 
 - [Wikipedia - VHS](https://en.wikipedia.org/wiki/VHS)
 - [Padding Truncation](https://huggingface.co/docs/transformers/pad_truncation)
+- Generic HF info. on Bert: [HuggingFace Bert](https://huggingface.co/docs/transformers/model_doc/bert)
+- HF Model Card for: [bert-base-uncased](https://huggingface.co/bert-base-uncased)
 
 # TODOs
 - [ ] Unit tests for Python modules

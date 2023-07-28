@@ -8,6 +8,10 @@ paths:
     data: cfpb_partial.csv
     debug_data: cfpb_debug.csv
     partial: cfpb.csv
+  save_results:
+    apply_model: False # Save model weights [boolean: True/False]
+    apply_metric: True # Save performance metrics [boolean: True/False]
+    base_dir: ../logs
 
 # DEBUG [True or False]; if False it will load the debug_data
 # Use for pipeline development
@@ -17,7 +21,7 @@ debug: False
 data_info:
   source_fields:
     - Consumer complaint narrative
-    - Zip code
+    - ZIP code
     - Sub-issue
   target: Product
 
@@ -28,7 +32,7 @@ stratify:
 # Cross-Validation Folds
 cv:
   num_folds: 5
-  val_folds: [1, 2, 3, 4, 5] #[list of integers] (start counting at 1)
+  val_folds: [1] #[list of integers] (start counting at 1)
 
 # Preprocessing
 preprocessing:
@@ -41,16 +45,6 @@ preprocessing:
     fields:
       - Product
 
-
-# Data
-wandb:
-  project: nlp-testing
-  entity: mdunlap
-  log_results: True
-  interval_type: steps #[epochs, steps]
-  interval_delta: 1 #[int describing numer of intervals]
-
-
 # Model and Tokenizer
 model_tokenizer:
   base_dir: ../hf_download
@@ -58,15 +52,12 @@ model_tokenizer:
 
 # Model
 model:
-  dir: ./utils/models
-  module: bert
-  func: SillyTest
   freeze:
     apply: False
     # Number of layers to freeze starting from layer 1
     num_layers: 5 
   mean_pooling:
-    apply: False
+    apply: True
   gradient_checkpointing: False
 
 # Tokenizer
@@ -84,13 +75,15 @@ optimizer:
   name: AdamW
   lr:
     min: 1.0E-5
-    max: 1.0E-1
+    max: 1.0E-4
 
 # Learning Rate Scheduler
 lr_scheduler:
   name: CosineAnnealingLR
   OneCycleLR:
     pct_start: 0.1
+  CosineAnnealingLR:
+    eta_min: 1.0E-5
 
 # Tuning
 epochs: 1

@@ -9,7 +9,7 @@ paths:
     partial: cfpb.csv
   save_results:
     apply_model: False # Save model weights [boolean: True/False]
-    apply_metric: True # Save performane metrics [boolean: True/False]
+    apply_metric: True # Save performance metrics [boolean: True/False]
     base_dir: ../logs
 
 # DEBUG [True or False]; if False it will load the debug_data
@@ -84,6 +84,7 @@ lr_scheduler:
   OneCycleLR:
     pct_start: 0.1
   CosineAnnealingLR:
+    eta_min: 1.0E-5
 
 
 # Model Tuning
