@@ -85,7 +85,7 @@ lr_scheduler:
     eta_min: 1.0E-5
 
 # Tuning
-epochs: 15
+epochs: 30
 batch_size: 16
 num_workers: 8
 eval_metric:
