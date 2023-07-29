@@ -99,7 +99,7 @@ To understand this workflow, proceed with the use case in the following order:
 ### [1.) EDA - Jupyter Notebook](./notebooks/eda.ipynb)
 Review this [EDA - Jupyter Notebook](./notebooks/eda.ipynb) for a brief exploration of the CFPB data, featuring model features, target distributions, text tokens count, and data reduction.
 
-### [2.) Model Training Walkthrough - Jupyter Notebook](./notebooks/training.ipynb)
+### [2.) Model Training Walkthrough - Jupyter Notebook](https://nbviewer.org/github/mddunlap924/PyTorch-LLM/blob/main/notebooks/training.ipynb)
 Use this notebook to train a model via a [single configuration file](./cfgs/train-0-notebook.yaml), with supplementary pre-training tasks and further analysis techniques for model selection.
 
 ### [3.) Model Training Script - Python Script](./scripts/train_model.py)
