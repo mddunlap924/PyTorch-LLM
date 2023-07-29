@@ -10,9 +10,9 @@
 
 <p align="center">
 <a href="#introduction">Introduction</a> &nbsp;&bull;&nbsp;
+<a href="#getting-started">Getting Started</a> &nbsp;&bull;&nbsp;
 <a href="#generic-workflow">Generic Workflow</a> &nbsp;&bull;&nbsp;
 <a href="#use-case">Use Case</a> &nbsp;&bull;&nbsp;
-<a href="#getting-started">Getting Started</a> &nbsp;&bull;&nbsp;
 <a href="#deep-learning-techniques">Deep Learning Techniques</a> &nbsp;&bull;&nbsp;
 <a href="#issues">Issues</a> &nbsp;&bull;&nbsp;
 <a href="#todos">TODOs</a>
@@ -39,6 +39,21 @@ Key advantages of this workflow not commonly found elsewhere include:
 - **Integrated Feature Set**: The repository provides a comprehensive feature set for quick pipeline development and modification.
 
 **NOTE**: This workflow can be adapted for many PyTorch deep learning applications, not just LLMs.
+
+
+# Getting Started
+
+To understand this workflow, proceed with the use case in the following order:
+
+### [1.) EDA - Jupyter Notebook](./notebooks/eda.ipynb)
+Review this [EDA - Jupyter Notebook](./notebooks/eda.ipynb) for a brief exploration of the CFPB data, featuring model features, target distributions, text tokens count, and data reduction.
+
+### [2.) Model Training Walkthrough - Jupyter Notebook](https://nbviewer.org/github/mddunlap924/PyTorch-LLM/blob/main/notebooks/training.ipynb)
+Use this notebook to train a model via a [single configuration file](./cfgs/train-0-notebook.yaml), with supplementary pre-training tasks and further analysis techniques for model selection.
+
+### [3.) Model Training Script - Python Script](./scripts/train_model.py)
+This script offers robust long-term training routines across various [configuration files](./cfgs/train-1.yaml) and can be paired with this [bash shell script](./bash/train-all-cfgs.sh) for full automation of model development and experiments, ideal for prolonged runs and allowing your computer to work autonomously.
+
 
 # Generic Workflow
 THe Pseudo Code provided below guides this repository and outlines a cross-validation training process using PyTorch.
@@ -91,19 +106,6 @@ We're performing multi-class classification on this dataset, where the five prod
 ### Metrics
 The classification performance was evaluated using MultiClass: [F1 Score](https://pytorch.org/torcheval/stable/generated/torcheval.metrics.MulticlassF1Score.html#torcheval.metrics.MulticlassF1Score), [Precision](https://pytorch.org/torcheval/stable/generated/torcheval.metrics.MulticlassPrecision.html#torcheval.metrics.MulticlassPrecision), and [Recall](https://pytorch.org/torcheval/stable/generated/torcheval.metrics.MulticlassRecall.html#torcheval.metrics.MulticlassRecall), but other metrics could be used as well.
 
-
-# Getting Started
-
-To understand this workflow, proceed with the use case in the following order:
-
-### [1.) EDA - Jupyter Notebook](./notebooks/eda.ipynb)
-Review this [EDA - Jupyter Notebook](./notebooks/eda.ipynb) for a brief exploration of the CFPB data, featuring model features, target distributions, text tokens count, and data reduction.
-
-### [2.) Model Training Walkthrough - Jupyter Notebook](https://nbviewer.org/github/mddunlap924/PyTorch-LLM/blob/main/notebooks/training.ipynb)
-Use this notebook to train a model via a [single configuration file](./cfgs/train-0-notebook.yaml), with supplementary pre-training tasks and further analysis techniques for model selection.
-
-### [3.) Model Training Script - Python Script](./scripts/train_model.py)
-This script offers robust long-term training routines across various [configuration files](./cfgs/train-1.yaml) and can be paired with this [bash shell script](./bash/train-all-cfgs.sh) for full automation of model development and experiments, ideal for prolonged runs and allowing your computer to work autonomously.
 
 # Deep Learning Techniques
 Below are a list of deep learning techniques and tools utilized throughout this repository.
